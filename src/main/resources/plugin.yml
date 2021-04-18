@@ -1,0 +1,9 @@
+name: Spleef
+version: ${project.version}
+main: com.github.offby0point5.mc.plugin.paper.spleef.Spleef
+api-version: 1.16
+prefix: spleef
+load: STARTUP
+authors: [ offbyone ]
+description: Play spleef on PaperMC
+website: https://github.com/off-by-0point5
