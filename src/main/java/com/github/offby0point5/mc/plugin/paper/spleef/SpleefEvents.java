@@ -86,7 +86,7 @@ public class SpleefEvents implements Listener {
         // Reset all layers
         World world = Bukkit.getServer().getWorld("world");
         if (world == null) System.out.println("World is null");
-        else
+        else {
             for (int x = -this.gameFieldRadius; x <= this.gameFieldRadius; x++) {
                 for (int z = -this.gameFieldRadius; z <= this.gameFieldRadius; z++) {
                     world.getBlockAt(x, 15, z).setType(Material.BARRIER);
@@ -94,6 +94,11 @@ public class SpleefEvents implements Listener {
                     world.getBlockAt(x, 5, z).setType(Material.FARMLAND);
                 }
             }
+            WorldBorder worldBorder = world.getWorldBorder();
+            worldBorder.setCenter(0.5, 0.5);
+            worldBorder.setSize(this.gameFieldRadius*2+1);
+            worldBorder.setWarningDistance(0);
+        }
         //ItemStack waitItem1 = new ItemStack(Material.ACACIA_SAPLING, 1);
         //ItemStack[] waitItems = {waitItem1};
         // Set all players into wait mode
