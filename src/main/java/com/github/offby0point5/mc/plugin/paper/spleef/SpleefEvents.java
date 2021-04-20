@@ -4,6 +4,7 @@ import com.destroystokyo.paper.Namespaced;
 import com.destroystokyo.paper.event.server.ServerTickStartEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,6 +17,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -94,17 +96,13 @@ public class SpleefEvents implements Listener {
                     world.getBlockAt(x, 5, z).setType(Material.FARMLAND);
                 }
             }
-            WorldBorder worldBorder = world.getWorldBorder();
-            worldBorder.setCenter(0.5, 0.5);
-            worldBorder.setSize(this.gameFieldRadius*2+1);
-            worldBorder.setWarningDistance(0);
         }
         //ItemStack waitItem1 = new ItemStack(Material.ACACIA_SAPLING, 1);
-        //ItemStack[] waitItems = {waitItem1};
+        ItemStack[] waitItems = {};
         // Set all players into wait mode
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             this.setPlayerState(player, PlayerState.LOST);
-            //player.getInventory().setContents(waitItems);
+            player.getInventory().setContents(waitItems);
         }
     }
 
@@ -114,6 +112,7 @@ public class SpleefEvents implements Listener {
         ItemStack breakItem = new ItemStack(this.spleefItem, 1);
         ItemMeta itemMeta = breakItem.getItemMeta();
         itemMeta.setUnbreakable(true);
+        itemMeta.addEnchant(Enchantment.DIG_SPEED, 5, false);
         List<Namespaced> breakableKeys = new ArrayList<>();
         breakableKeys.add(this.spleefBlock.getKey());
         itemMeta.setDestroyableKeys(breakableKeys);
@@ -236,5 +235,28 @@ public class SpleefEvents implements Listener {
             }
             this.stateTicks++;
         }
+    }
+
+    @EventHandler
+    public void onWorldInit(WorldInitEvent event) {
+        World world = event.getWorld();
+        if (!world.getName().equals("world")) return;
+
+        WorldBorder worldBorder = world.getWorldBorder();
+        worldBorder.setCenter(0.5, 0.5);
+        worldBorder.setSize(this.gameFieldRadius*2+1);
+        worldBorder.setWarningDistance(0);
+
+        world.setAutoSave(false);  // disable auto saving
+        world.setViewDistance(2);
+        world.setPVP(false);
+
+        world.setGameRule(GameRule.KEEP_INVENTORY, true);
+        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+        world.setGameRule(GameRule.FALL_DAMAGE, false);
+        world.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
+        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        world.setTime(600);
     }
 }
